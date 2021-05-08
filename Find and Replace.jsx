@@ -1,7 +1,4 @@
 //TO DO
-//CSV - Replace all replaces with the word not the CSV
-//CSV - stop replace working if replace is empty
-//Layers change redo search
 //Fix changes made, found text 
 //Code in replace and replace all buttons the onclick need to do with text find or csv find
 //Replace/All doesn't account for CSV yet
@@ -10,7 +7,10 @@
 //Work out how to replace special charaters - not too worried about this atm as it only effects single characters
 //layer[j].property("Text").property("Source Text").setValue(replace);
 
-// @include "Baby Parse.jsx"
+//@include "Baby Parse.jsxinc"
+
+var panelGlobal = this;
+var palette = (function () {
 
 //Global Variables
 var changes = [];
@@ -32,7 +32,7 @@ var settings = {
 }
 
 //Palette
-var panelGlobal = this;
+
 var palette = (panelGlobal instanceof Panel) ? panelGlobal : new Window("palette", undefined, undefined, {resizeable: true}); 
     if ( !(panelGlobal instanceof Panel) ) palette.text = "Find and Replace"; 
     palette.orientation = "column"; 
@@ -135,22 +135,9 @@ replaceButton.onClick = function(){
 var replaceAllButton = runTextGroup.add("button", undefined, undefined); 
 replaceAllButton.text = "Replace All"; 
 
-    //Old replace onclick
-// replaceAllButton.onClick = function(){
-//     if(tabOpen == "Text find and replace"){
-//         app.beginUndoGroup("Find and Replace");
-//         errors = [];
-//         changes = [];
-//         findTextInProject(findText.text);
-//     }else{
-//         findReplaceCSV();
-//     }
-// };
-
 replaceAllButton.onClick = function(){
     replaceAll();
 }
-
 
 var changesMadeText = runTextGroup.add("statictext");
     changesMadeText.text = "No Changes Made";
@@ -160,7 +147,7 @@ var changesMadeText = runTextGroup.add("statictext");
         }
     });
 
-//Putting the circle into a group to easily delete and replace it.
+//Putting the circle into a group to easier to delete and replace it.
 circleGroup = runTextGroup.add("group");
 drawCircle(orange);
 
@@ -191,7 +178,7 @@ function closeWindow(tab){
 function csvFindReplaceWindow(){
     csvFile = File.openDialog("Choose CSV");
     if(csvFile == null) return;
-    tabOpen = "CSV find and replace"
+    tabOpen = "CSV find and replace";
     textFindReplaceGroup.graphics.backgroundColor = textFindReplaceGroup.graphics.newBrush(textFindReplaceGroup.graphics.BrushType.SOLID_COLOR, [.1,.1,.1,0]);
     csvFindReplaceGroup.graphics.backgroundColor = csvFindReplaceGroup.graphics.newBrush(csvFindReplaceGroup.graphics.BrushType.SOLID_COLOR, [.1,.1,.1]);
 }
@@ -388,7 +375,6 @@ function findTextInProject(find, replace){
                 //checkText(comp, layer[j])
             }
         }
-
     }
     
     //updateErrorText();
@@ -444,15 +430,6 @@ function replaceAll(){
     updateErrorText();
 }
 
-function catchError(){
-    try {
-        menu[i][1].name
-        }
-    catch(err) {
-        return
-        }
-}
-
 function changeText(text, find, replace){
     if(matchFull.value){
         text.setValue(replace)
@@ -481,9 +458,7 @@ function checkVisible(){
     }
     
     function search(comp){
-
         var layer = comp.layers;
-
         for(var j = 1; j <= comp.numLayers; j++){
             if(!(layer[j] instanceof TextLayer)){
                 if(layer[j].source instanceof CompItem && checkNestedComps) search(layer[j].source); //If layer is a comp and not all comps are picked check it 
@@ -492,7 +467,6 @@ function checkVisible(){
                 checkText(comp, layer[j]);
             }
         }
-    
     updateErrorText();
     app.endUndoGroup();
     app.executeCommand(16);
@@ -525,7 +499,6 @@ function checkText(comp, layer){
     text.setValue(textChanges);
     
 }
-
 
 //Update Text
 function updateErrorText(){
@@ -571,7 +544,7 @@ function openLayerMenu(clicked, menu, textToChange, mouse){
     
     layerMenu.onDeactivate = function(){layerMenu.close()};
     layerMenu.location = [mouse.screenX, mouse.screenY - (25 * groupCount)];
-    clicked.text = (groupCount == 1) ? groupCount + " " + textToChange : groupCount + " " + textToChange + "s";
+    //clicked.text = (groupCount == 1) ? groupCount + " " + textToChange : groupCount + " " + textToChange + "s";
     if(groupCount > 0) layerMenu.show();
 
     function fillLayerMenu(){
@@ -638,3 +611,5 @@ function compareComps(a, b) {
     }
     return true;
   }
+
+})()
