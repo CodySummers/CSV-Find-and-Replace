@@ -10,26 +10,28 @@ var panelGlobal = this;
 var palette = (panelGlobal instanceof Panel) ? panelGlobal : new Window("palette", undefined, undefined, {resizeable: true}); 
     if ( !(panelGlobal instanceof Panel) ) palette.text = "Find and Replace"; 
     palette.orientation = "column"; 
-    palette.alignChildren = ["center","center"]; 
+    palette.alignChildren = ["left","center"]; 
     palette.spacing = 10; 
     palette.margins = 16; 
     
 var allGroup = palette.add("group")
     allGroup.orientation = "column";
+    allGroup.alignChildren = ["left", "center"]
+    //allGroup.maximumSize.width = 300; 
 
 //Find Group
 var findGroup = allGroup.add("group", undefined, {name: "findGroup"}); 
     findGroup.orientation = "row"; 
-    findGroup.alignChildren = ["left","center"]; 
+    findGroup.alignChildren = ["fill","center"]; 
     findGroup.spacing = 10; 
-    findGroup.margins = 0; 
-
+    findGroup.margins = 0;
+    
 var find = findGroup.add("statictext", undefined, undefined, {name: "find"}); 
-    find.text = "Find"; 
+    find.text = "Find:"; 
 
 var findText = findGroup.add('edittext {properties: {name: "findText", multiline: true}}'); 
     findText.text = "EditText"; 
-    findText.preferredSize.width = 300; 
+    findText.preferredSize.width = 319; 
 
 var replaceGroup = allGroup.add("group", undefined, {name: "replaceGroup"}); 
     replaceGroup.orientation = "row"; 
@@ -38,13 +40,21 @@ var replaceGroup = allGroup.add("group", undefined, {name: "replaceGroup"});
     replaceGroup.margins = 0; 
 
 var replace = replaceGroup.add("statictext", undefined, undefined, {name: "replace"}); 
-    replace.text = "Replace"; 
+    replace.text = "Replace:"; 
 
 var replaceText = replaceGroup.add('edittext {properties: {name: "replaceText", multiline: true}}'); 
     replaceText.text = "EditText"; 
     replaceText.preferredSize.width = 300; 
 
+var caseSensitivityGroup = allGroup.add("group");
+    caseSensitivityGroup.margins = 5;
+
+var caseSensitivity = caseSensitivityGroup.add("checkbox", undefined, undefined); 
+    caseSensitivity.text = "Case Sensisitve";
+    caseSensitivity.value = false;
+
 var runTextGroup = allGroup.add("group")
+    runTextGroup.margins = 0;
 
 var runButton = runTextGroup.add("button", undefined, undefined, {name: "runButton"}); 
     runButton.text = "Run"; 
@@ -125,8 +135,14 @@ function findReplace(){
             if(!(layer[j] instanceof TextLayer)){
                 continue;
             }
-            alert(layer[j].property("Text").property("Source Text").value.toString() + "\n" + findText.text)
-            if(findText.text.search(layer[j].property("Text").property("Source Text").value.toString()) != -1){
+
+            //alert(layer[j].property("Text").property("Source Text").value.toString().replace(/(\r\n|\n|\r|\s+|\s+$)/gm,"") + "\n" + findText.text.replace(/(\r\n|\n|\r|\s+|\s+$)/gm,""))
+            //Remove any enters and white space .replace(/(\r\n|\n|\r|\s+|\s+$)/gm,"")
+            var findTextCap = (caseSensitivity.value == false) ? findText.text.toUpperCase() : findText.text;
+            var comppareTextCap = (caseSensitivity.value == false) ? layer[j].property("Text").property("Source Text").value.toString().toUpperCase() : layer[j].property("Text").property("Source Text").value.toString();
+            //alert(findTextCap + "\n" + comppareTextCap)
+
+            if(findTextCap.replace(/(\r\n|\n|\r|\s+|\s+$)/gm,"") == comppareTextCap.replace(/(\r\n|\n|\r|\s+|\s+$)/gm,"")){
                 layer[j].property("Text").property("Source Text").setValue(replaceText.text);
                 changesMade = true;
                 changes.push([comp, layer[j]])
@@ -246,7 +262,7 @@ function findReplace(){
         layerMenu.spacing = 3;
         
         for(var i = 0; i < menu.length; i++){
-            changeMenu();
+            fillLayerMenu();
         }
         
         layerMenu.onDeactivate = function(){layerMenu.close()};
@@ -254,7 +270,7 @@ function findReplace(){
         clicked.text = (groupCount == 1) ? groupCount + " " + textToChange : groupCount + " " + textToChange + "s";
         if(groupCount > 0) layerMenu.show();
     
-        function changeMenu(){
+        function fillLayerMenu(){
             
             //If layer or comp was deleted remove from list
             try {
