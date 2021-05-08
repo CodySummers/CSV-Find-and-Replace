@@ -4,7 +4,7 @@
 //Stop comp getting searched more than once if it's a pre-comp
 //Work out how to replace special charaters - not too worried about this atm as it only effects single characters
 
-//@include "./Baby Parse.jsxinc"
+//@include "./babyparse.jsxinc"
 
 var panelGlobal = this;
 var palette = (function () {
