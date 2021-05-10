@@ -1,4 +1,4 @@
-# Find-and-Replace
+# CSV-Find-and-Replace
 After Effects script, find and replace a word/sentence or via CSV.
 
 Uses an amended version of [babyparse](https://github.com/Rich-Harris/BabyParse) to work within After Effects.
